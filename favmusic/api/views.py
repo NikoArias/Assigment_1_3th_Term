@@ -8,13 +8,18 @@ from django.http import HttpResponse, JsonResponse
 def index(request):
     return HttpResponse("Hello, world")
 
+
+# http POST 127.0.0.1:8000/api/register username=lalalala password=lalalal.
+
 def register_api_endpoint(request):
     if request.method == "POST":
-        data = json.loads(request.body)
+        try:
+            data = json.loads(request.body)
+        except:
+            return JsonResponse({"msg":"something went wrong"}, status= 400)
 
         username = data.get("username")
         password = data.get("password")
-
 
         if username == None:
             return JsonResponse({"msg":"you forgot the username."})
@@ -22,32 +27,42 @@ def register_api_endpoint(request):
             return JsonResponse({"msg":"you forgot the password."})
         else:
             return JsonResponse({"Message":"account created"})
-
     else:
-        return JsonResponse({"Console":"Try again."})
+        return JsonResponse({"Console":"Try again."}, status=405)
+
+# http POST 127.0.0.1:8000/api/login username=lalalala password=lalalal.
 
 def login_api_endpoint(request):
     if request.method == "POST":
-        data = json.loads(request.body)
+          try:
+              data = json.loads(request.body)
+          except:
+              return JsonResponse({"msg":"something went wrong"}, status= 400)
 
-        username = data.get("username")
-        password = data.get("password")
+          username = data.get("username")
+          password = data.get("password")
 
-        if username == None:
-            return JsonResponse({"msg":"you forgot the username."})
-        elif password == None:
-            return JsonResponse({"msg":"you forgot the password."})
-        else:
-            return JsonResponse({"Token":"123456"})
+          if username == None:
+              return JsonResponse({"msg":"you forgot the username."})
+          elif password == None:
+              return JsonResponse({"msg":"you forgot the password."})
+          else:
+              return JsonResponse({"Token":"123456"})
     else:
-        return JsonResponse({"Console":"Try again."}, status=405)
+              return JsonResponse({"Console":"Try again."}, status=405)
+
+# http GET 127.0.0.1:8000/api/music.
+# http POST 127.0.0.1:8000/api/login artist=lalalala song=lalalal.
 
 def list_create_music_api_endpoint(request):
     if request.method == "GET":
         # return JsonResponse({"msg":"working"})
         return  JsonResponse({"results":[{"id": 1, "artist": "Some artist name", "song_title":"lalala"}]})
     elif request.method == "POST":
-         data = json.loads(request.body)
+         try:
+             data = json.loads(request.body)
+         except:
+             return JsonResponse({"msg":"something went wrong"}, status= 400)
 
          artist = data.get("artist")
          song_title = data.get("song")
@@ -62,15 +77,22 @@ def list_create_music_api_endpoint(request):
     else:
         return JsonResponse({"msg":"try again"}, status=405)
 
-
+# http GET 127.0.0.1:8000/api/rud/("id").
+# http PUT 127.0.0.1:8000/api/rud/("id") artist=lalalala song=lalalal.
+# http DELETE 127.0.0.1:8000/api/rud/("id").
 
 def comments_rud_api_endpoint(request, id):
     if request.method == "GET":
         return JsonResponse({"results": [{"id": id, "artist": "Some random artist", "SongTitle": "some random song"}]})
-    elif request.method == "PUT":
-        data = json.loads(request.body)
 
-        artist_name = data.get("text")
+    elif request.method == "PUT":
+
+        try:
+            data = json.loads(request.body)
+        except:
+            return JsonResponse({"msg":"something went wrong"}, status= 400)
+
+        artist_name = data.get("artist")
         song_name = data.get("song")
 
         return JsonResponse({"id": id, "Artist": artist_name, "SongName": song_name})
